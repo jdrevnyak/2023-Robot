@@ -17,7 +17,7 @@
   "Window": {
     "###FMS": {
       "Collapsed": "0",
-      "Pos": "5,540",
+      "Pos": "5,576",
       "Size": "283,146"
     },
     "###Joysticks": {
@@ -34,6 +34,11 @@
       "Collapsed": "0",
       "Pos": "1025,20",
       "Size": "250,695"
+    },
+    "###RoboRIO": {
+      "Collapsed": "0",
+      "Pos": "5,125",
+      "Size": "119,146"
     },
     "###System Joysticks": {
       "Collapsed": "0",

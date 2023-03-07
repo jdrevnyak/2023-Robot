@@ -1,27 +1,18 @@
 import wpilib
-import ctre
 import wpilib.drive
 from robotcontainer import RobotContainer
 
 
 class UHSRobot(wpilib.TimedRobot):
-    # Channels on the roboRIO that the motor controllers are plugged in to
-    
-    
-
-
-    # The channel on the driver station that the joystick is connected to
-    joystickChannel = 0
-
-    def robotInit(self):
-        wpilib.CameraServer.launch()
-        m_frontleft = wpilib.Talon(0)
-        m_backleft = wpilib.Talon(1)
-        m_frontright = wpilib.Talon(2)
-        m_backright = wpilib.Talon(3)
+    def robotInit(self) -> None:
+        controls = RobotContainer()
+        talons = controls.motorcontrollers()
+        controller = controls.configureButtonBindings()
         
-        leftMotors = wpilib.MotorControllerGroup(m_frontleft, m_backleft)
-        rightMotors = wpilib.MotorControllerGroup(m_frontright, m_backright)
+        wpilib.CameraServer.launch('vision.py:main')
+        
+        leftMotors = wpilib.MotorControllerGroup(talons.m_frontleft, talons.m_backleft)
+        rightMotors = wpilib.MotorControllerGroup(talons.m_frontright, talons.m_backright)
         rightMotors.setInverted(True)
         
         # object that handles basic drive operations
@@ -29,7 +20,7 @@ class UHSRobot(wpilib.TimedRobot):
         self.myRobot.setExpiration(0.1)
 
         # joystick #0
-        self.stick = wpilib.Joystick(0)
+        self.stick = controller
 
     def teleopInit(self):
         """Executed at the start of teleop mode"""
