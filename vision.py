@@ -1,23 +1,22 @@
-# Import the camera server
-from cscore import CameraServer
-
-# Import OpenCV and NumPy
 import cv2
 import numpy as np
+
+from cscore import CameraServer
+
 
 def main():
     cs = CameraServer.getInstance()
     cs.enableLogging()
 
-    # Capture from the first USB Camera on the system
     camera = cs.startAutomaticCapture()
+
     camera.setResolution(320, 240)
 
     # Get a CvSink. This will capture images from the camera
     cvSink = cs.getVideo()
 
     # (optional) Setup a CvSource. This will send images back to the Dashboard
-    outputStream = cs.putVideo("Limelight", 320, 240)
+    outputStream = cs.putVideo("Rectangle", 320, 240)
 
     # Allocating new images is very expensive, always try to preallocate
     img = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
@@ -32,9 +31,8 @@ def main():
             # skip the rest of the current iteration
             continue
 
-        #
-        # Insert your image processing logic here!
-        #
+        # Put a rectangle on the image
+        cv2.rectangle(img, (100, 100), (300, 300), (255, 255, 255), 5)
 
-        # (optional) send some image back to the dashboard
+        # Give the output stream a new image to display
         outputStream.putFrame(img)

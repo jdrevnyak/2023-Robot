@@ -1,13 +1,13 @@
 import wpilib
 import ctre
-import networktables
+import ntcore
 from wpilib.drive import DifferentialDrive
 from wpilib.interfaces import GenericHID
-from networktables import NetworkTables
 
 class MyRobot(wpilib.TimedRobot):
     
     def robotInit(self):
+        wpilib.CameraServer.launch("vision.py:main")
         # Initialize Xbox controller on port 0
         self.controller = wpilib.XboxController(0)
         
@@ -26,18 +26,20 @@ class MyRobot(wpilib.TimedRobot):
         # Create differential drive object
         self.drive = DifferentialDrive(self.left_motors, self.right_motors)
         
-        # Initialize NetworkTables
-        NetworkTables.initialize(server='roborio-1537-frc.local')
+        # Initialize ntcore
+        inst = ntcore.NetworkTableInstance.getDefault()
+        inst.startClient4("example client")
+        inst.setServerTeam(1537)
         
-        # Initialize Limelight network table
-        self.limelight_table = NetworkTables.getTable('limelight')
+        # Connect to the Limelight network table
+        self.limelight_table = inst.getTable('limelight')
         
         # Set Limelight pipeline to use
         self.limelight_table.putNumber('pipeline', 0)
         
         # Set Limelight LEDs to off
         self.limelight_table.putNumber('ledMode', 1)
-        
+            
     def teleopPeriodic(self):
         # Get Limelight target data
         target_visible = self.limelight_table.getNumber('tv', 0)
