@@ -2,17 +2,22 @@
 import cscore
 
 # Import OpenCV and NumPy
-
 import cv2
 import numpy as np
-# Initialize the camera capture
-cam = cscore.UsbCamera("camera", 0)
-cam.setResolution(640, 480)
+
 
 # Initialize the camera server and publish the video stream
 cs = cscore.CameraServer
-output_stream = cs.putVideo("output", 640, 480)
-output_stream.setPixelFormat(cscore.VideoMode.PixelFormat.kMJPEG)
+cam = cs.startAutomaticCapture(1)
+cam.setResolution(320, 240)
+
+# Create a CvSink object and set it to grab frames from the camera server
+cv_sink = cs.getVideo()
+cv_sink.setSource(cam)
+
+# Initialize the video stream output and set the pixel format to MJPEG
+output_stream = cs.putVideo("output", 320, 240)
+output_stream.setPixelFormat(cscore.VideoMode.PixelFormat.kBGR)
 
 # Initialize the human detection algorithm (here we use OpenCV's HOGDescriptor)
 hog = cv2.HOGDescriptor()
@@ -20,11 +25,11 @@ hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
 # Start the video capture loop
 while True:
-    # Capture a frame from the camera
+    # Create an empty numpy.ndarray to store the grabbed frame
     frame = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
-    cam.grabFrameNoTimeout(frame)
-    if cam.getError() != "":
-        print(cam.getError())
+
+    # Grab a frame from the camera server using the CvSink object
+    _, frame = cv_sink.grabFrame(frame)
 
     # Apply the human detection algorithm to the frame
     found, _ = hog.detectMultiScale(frame)
